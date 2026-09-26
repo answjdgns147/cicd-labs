@@ -5,7 +5,18 @@ on:
     branches: [main]
 
 jobs:
+  sast:
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Semgrep scan
+        run: semgrep scan --config auto --error
+
   build:
+    needs: sast
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
