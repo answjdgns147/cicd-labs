@@ -59,6 +59,8 @@ jobs:
         with:
           scan-type: image
           image-ref: cicd-labs:${{ github.sha }}
+          cache: "false"
+          cache-dir: ${{ runner.temp }}/trivy-cache-${{ github.run_id }}-${{ github.run_attempt }}
           scanners: vuln
           severity: HIGH,CRITICAL
           ignore-unfixed: true
