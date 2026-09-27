@@ -1,17 +1,27 @@
+FROM python:3.13-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Install dependencies into an isolated venv, then drop pip from it
+RUN python -m venv /opt/venv
+COPY requirements.txt .
+RUN /opt/venv/bin/pip install --no-cache-dir -r requirements.txt \
+    && /opt/venv/bin/pip uninstall -y pip
+
+
 FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PATH="/opt/venv/bin:$PATH"
+
+# Remove pip (and ensurepip's bundled pip wheel) shipped with the base image
+RUN python -m pip uninstall -y pip \
+    && rm -rf /usr/local/lib/python3.13/ensurepip/_bundled
+
+COPY --from=builder /opt/venv /opt/venv
 
 WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir --upgrade "msgpack>=1.2.1" "setuptools>=78.1.1"
-
-# TEMP: print installed versions in build log for verification
-RUN pip show msgpack setuptools
-
 COPY app.py .
 
 EXPOSE 5000
