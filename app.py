@@ -10,6 +10,7 @@ app = Flask(__name__)
 def health():
     return jsonify({
         "status": "ok",
+        "version": "v2",
         "pod": socket.gethostname(),
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }), 200
