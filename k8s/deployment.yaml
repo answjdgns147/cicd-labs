@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cicd-labs
+  labels:
+    app: cicd-labs
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cicd-labs
+  template:
+    metadata:
+      labels:
+        app: cicd-labs
+    spec:
+      containers:
+        - name: cicd-labs
+          image: ghcr.io/answjdgns147/cicd-labs:latest
+          # :latest 태그는 기본값이 Always지만 명시해 둠
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi

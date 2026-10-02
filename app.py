@@ -1,3 +1,6 @@
+import socket
+from datetime import datetime, timezone
+
 from flask import Flask, jsonify
 
 app = Flask(__name__)
@@ -5,7 +8,11 @@ app = Flask(__name__)
 
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok"}), 200
+    return jsonify({
+        "status": "ok",
+        "pod": socket.gethostname(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }), 200
 
 
 if __name__ == "__main__":
