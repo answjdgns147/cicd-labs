@@ -22,10 +22,18 @@ RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
 RUN python -m pip uninstall -y pip \
     && rm -rf /usr/local/lib/python3.13/ensurepip/_bundled
 
-COPY --from=builder /opt/venv /opt/venv
+# Unprivileged runtime user (numeric UID so k8s runAsNonRoot can verify it)
+RUN groupadd --system --gid 10001 app \
+    && useradd --system --uid 10001 --gid app --no-create-home --shell /usr/sbin/nologin app
+
+# venv and app code stay root-owned and read/execute-only for the runtime user,
+# so a compromised process cannot modify its own dependencies or code
+COPY --from=builder --chown=root:root /opt/venv /opt/venv
 
 WORKDIR /app
-COPY app.py .
+COPY --chown=root:root --chmod=644 app.py .
+
+USER 10001:10001
 
 EXPOSE 5000
 
