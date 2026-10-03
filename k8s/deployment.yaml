@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: cicd-labs
-          image: ghcr.io/answjdgns147/cicd-labs:latest
+          image: ghcr.io/answjdgns147/cicd-labs:1fb47314be41d439e5d9bff992fd20179210e5b8
           # :latest 태그는 기본값이 Always지만 명시해 둠
           imagePullPolicy: Always
           ports:
