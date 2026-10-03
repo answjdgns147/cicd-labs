@@ -1,0 +1,39 @@
+replicaCount: 5
+
+image:
+  repository: ghcr.io/answjdgns147/cicd-labs
+  # 비워두면 Chart.yaml의 appVersion 사용
+  tag: "1fb47314be41d439e5d9bff992fd20179210e5b8"
+  # :latest 태그는 기본값이 Always지만 명시해 둠
+  pullPolicy: Always
+
+# 컨테이너가 리스닝하는 포트
+containerPort: 5000
+
+service:
+  type: NodePort
+  port: 80
+  # type이 NodePort일 때만 적용 (비워두면 자동 할당)
+  nodePort: 30080
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 3
+  periodSeconds: 5
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 250m
+    memory: 128Mi

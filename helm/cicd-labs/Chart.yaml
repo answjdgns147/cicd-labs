@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cicd-labs
+description: Flask app for the cicd-labs CI/CD pipeline
+type: application
+version: 0.1.0
+appVersion: "latest"
