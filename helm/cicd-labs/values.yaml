@@ -3,7 +3,7 @@ replicaCount: 5
 image:
   repository: ghcr.io/answjdgns147/cicd-labs
   # 비워두면 Chart.yaml의 appVersion 사용
-  tag: "b5c0a3a441b4ee9e6a947af95442087e62e92ccf"
+  tag: "8a631a8816837989ca51bac7c6ef00c9ca2c01c5"
   # :latest 태그는 기본값이 Always지만 명시해 둠
   pullPolicy: Always
 
