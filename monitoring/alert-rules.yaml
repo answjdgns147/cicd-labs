@@ -1,0 +1,36 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cicd-labs-alert-rules
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: cicd-labs.rules
+      rules:
+        - alert: CicdLabsPodRestartLoop
+          expr: increase(kube_pod_container_status_restarts_total[15m]) >= 3
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container }}) restarted {{ $value | printf \"%.0f\" }} times in 15m"
+
+        - alert: CicdLabsNodeMemoryHigh
+          expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 >= 90
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Node {{ $labels.instance }} memory usage is {{ $value | printf \"%.1f\" }}%"
+
+        - alert: CicdLabsReplicasMismatch
+          expr: |
+            kube_deployment_status_replicas_available{deployment="cicd-labs"}
+              < kube_deployment_spec_replicas{deployment="cicd-labs"}
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Deployment {{ $labels.namespace }}/cicd-labs has fewer available replicas ({{ $value }}) than desired"
