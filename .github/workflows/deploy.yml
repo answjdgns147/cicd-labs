@@ -2,17 +2,22 @@ name: AWS 배포 테스트
 
 on:
   push:
-    branches: [main]      # main에 push하면 실행
-  workflow_dispatch:       # 수동 실행도 가능
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
-  id-token: write          # OIDC 토큰 발급 (필수!)
+  id-token: write
   contents: read
 
 jobs:
   test-auth:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug OIDC token claims
+        run: |
+          TOKEN=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r '.value')
+          echo "$TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | jq .
+
       - name: AWS 자격증명 받기 (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
